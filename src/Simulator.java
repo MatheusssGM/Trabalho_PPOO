@@ -65,7 +65,8 @@ public class Simulator
         view = new SimulatorView(depth, width);
         view.setColor(Fox.class, Color.blue);
         view.setColor(Rabbit.class, Color.orange);
-        view.setColor(Wolf.class, Color.red);
+        view.setColor(Lion.class, Color.red);
+        view.setColor(Lion.class, Color.black);
         
         // Configura um ponto inicial válido
         reset();
@@ -153,7 +154,7 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 double probability = rand.nextDouble();
                 if(probability <= WOLF_CREATION_PROBABILITY) {
-                    Wolf wolf = new Wolf(true);
+                    Lion wolf = new Lion(true);
                     animals.add(wolf);
                     wolf.setLocation(row, col);
                     field.place(wolf, row, col);
