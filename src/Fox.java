@@ -14,8 +14,8 @@ public class Fox extends Animal implements Predator
     // Características compartilhadas por todas as raposas
     private static final int BREEDING_AGE = 10;
     private static final int MAX_AGE = 150;
-    private static final double BREEDING_PROBABILITY = 0.09;
-    private static final int MAX_LITTER_SIZE = 3;
+    private static final double BREEDING_PROBABILITY = 0.15;
+    private static final int MAX_LITTER_SIZE = 4;
     private static final int RABBIT_FOOD_VALUE = 4;
     
     // Nível de comida da raposa

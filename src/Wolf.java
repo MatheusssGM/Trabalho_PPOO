@@ -5,7 +5,7 @@ import java.util.Iterator;
  * Modelo de um lobo no simulador.
  * Lobos são predadores superiores que caçam tanto raposas quanto coelhos.
  * Demonstra extensibilidade do sistema com herança e interface Predator.
- * 
+ *
  * @author Código melhorado com POO
  * @version 2025
  */
@@ -16,12 +16,12 @@ public class Wolf extends Animal implements Predator
     private static final int MAX_AGE = 200;
     private static final double BREEDING_PROBABILITY = 0.05;
     private static final int MAX_LITTER_SIZE = 2;
-    private static final int FOX_FOOD_VALUE = 7;
+    private static final int FOX_FOOD_VALUE = 4;
     private static final int RABBIT_FOOD_VALUE = 3;
-    
+
     // Nível de comida do lobo
     private int foodLevel;
-    
+
     /**
      * Cria um lobo. Pode ser criado recém-nascido ou com idade aleatória.
      * @param randomAge Se verdadeiro, terá idade e nível de fome aleatórios
@@ -36,7 +36,7 @@ public class Wolf extends Animal implements Predator
             foodLevel = FOX_FOOD_VALUE;
         }
     }
-    
+
     /**
      * Implementa o comportamento do lobo na simulação.
      * Caça raposas e coelhos, se reproduz, envelhece e pode morrer.
@@ -72,7 +72,7 @@ public class Wolf extends Animal implements Predator
             }
         }
     }
-    
+
     /**
      * Aumenta a fome do lobo. Pode resultar em morte.
      */
@@ -83,7 +83,7 @@ public class Wolf extends Animal implements Predator
             setDead();
         }
     }
-    
+
     /**
      * Implementa comportamento de caça da interface Predator.
      * Lobos preferem raposas mas também comem coelhos.
@@ -95,7 +95,7 @@ public class Wolf extends Animal implements Predator
     public Location hunt(Field field, Location location)
     {
         Iterator<Location> adjacentLocations = field.adjacentLocations(location);
-        
+
         // Primeiro procura por raposas (presa preferida)
         Iterator<Location> adjacentLocationsCopy = field.adjacentLocations(location);
         while(adjacentLocationsCopy.hasNext()) {
@@ -110,7 +110,7 @@ public class Wolf extends Animal implements Predator
                 }
             }
         }
-        
+
         // Se não encontrar raposas, procura por coelhos
         while(adjacentLocations.hasNext()) {
             Location where = adjacentLocations.next();
@@ -126,7 +126,7 @@ public class Wolf extends Animal implements Predator
         }
         return null;
     }
-    
+
     /**
      * Métodos implementados da classe abstrata Animal
      */
@@ -135,31 +135,31 @@ public class Wolf extends Animal implements Predator
     {
         return new Wolf(randomAge);
     }
-    
+
     @Override
     protected int getMaxAge()
     {
         return MAX_AGE;
     }
-    
+
     @Override
     protected int getBreedingAge()
     {
         return BREEDING_AGE;
     }
-    
+
     @Override
     protected double getBreedingProbability()
     {
         return BREEDING_PROBABILITY;
     }
-    
+
     @Override
     protected int getMaxLitterSize()
     {
         return MAX_LITTER_SIZE;
     }
-    
+
     /**
      * Implementa método da interface Predator.
      * @return Nível de comida atual
@@ -169,7 +169,7 @@ public class Wolf extends Animal implements Predator
     {
         return foodLevel;
     }
-    
+
     /**
      * Implementa método da interface Predator.
      * @return true se está com fome (foodLevel baixo)

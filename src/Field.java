@@ -5,20 +5,20 @@ import java.util.Random;
 
 /**
  * Representa um grid retangular de posições do campo.
- * Cada posição pode armazenar um único animal.
- * Melhorado com uso de generics.
- * 
- * @author Código melhorado com POO
+ * Cada posição pode armazenar um único animal e possui um Ambiente associado.
+ * * @author Código melhorado com POO
  * @version 2025
  */
 public class Field
 {
     private static final Random rand = new Random();
-    
+
     // Dimensões do campo
     private int depth, width;
     // Armazenamento para os animais
     private Animal[][] field;
+    // Armazenamento para os ambientes (terreno)
+    private Environment[][] environments;
 
     /**
      * Representa um campo com as dimensões dadas.
@@ -30,10 +30,11 @@ public class Field
         this.depth = depth;
         this.width = width;
         field = new Animal[depth][width];
+        environments = new Environment[depth][width];
     }
-    
+
     /**
-     * Limpa o campo.
+     * Limpa o campo (remove animais), mas mantem os ambientes.
      */
     public void clear()
     {
@@ -43,7 +44,41 @@ public class Field
             }
         }
     }
-    
+
+    /**
+     * Define o ambiente para uma localização específica.
+     * @param env O ambiente a ser definido (Montanha, Savana, etc.)
+     * @param row Linha
+     * @param col Coluna
+     */
+    public void setEnvironmentAt(int row, int col, Environment env) {
+        if(row >= 0 && row < depth && col >= 0 && col < width) {
+            environments[row][col] = env;
+        }
+    }
+
+    /**
+     * Retorna o ambiente na localização dada.
+     * @param location Localização no campo
+     * @return O ambiente na localização
+     */
+    public Environment getEnvironment(Location location) {
+        return getEnvironment(location.getRow(), location.getCol());
+    }
+
+    /**
+     * Retorna o ambiente nas coordenadas dadas.
+     * @param row Linha
+     * @param col Coluna
+     * @return O ambiente ou null se fora dos limites
+     */
+    public Environment getEnvironment(int row, int col) {
+        if(row >= 0 && row < depth && col >= 0 && col < width) {
+            return environments[row][col];
+        }
+        return null;
+    }
+
     /**
      * Coloca um animal na localização dada.
      * @param animal Animal a ser colocado
@@ -54,7 +89,7 @@ public class Field
     {
         place(animal, new Location(row, col));
     }
-    
+
     /**
      * Coloca um animal na localização dada.
      * @param animal Animal a ser colocado
@@ -64,7 +99,7 @@ public class Field
     {
         field[location.getRow()][location.getCol()] = animal;
     }
-    
+
     /**
      * Retorna o animal na localização dada, se houver.
      * @param location Localização no campo
@@ -74,7 +109,7 @@ public class Field
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
-    
+
     /**
      * Retorna o animal na localização dada, se houver.
      * @param row Linha desejada
@@ -85,24 +120,16 @@ public class Field
     {
         return field[row][col];
     }
-    
+
     /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area. This
-     *         may be the same object as the location parameter.
+     * Gera uma localização aleatória adjacente.
      */
     public Location randomAdjacentLocation(Location location)
     {
         int row = location.getRow();
         int col = location.getCol();
-        // Generate an offset of -1, 0, or +1 for both the current row and col.
         int nextRow = row + rand.nextInt(3) - 1;
         int nextCol = col + rand.nextInt(3) - 1;
-        // Check in case the new location is outside the bounds.
         if(nextRow < 0 || nextRow >= depth || nextCol < 0 || nextCol >= width) {
             return location;
         }
@@ -113,11 +140,9 @@ public class Field
             return location;
         }
     }
-    
+
     /**
-     * Tenta encontrar uma localização livre adjacente à localização dada.
-     * @param location Localização de referência
-     * @return Localização válida livre ou null se todas estão ocupadas
+     * Tenta encontrar uma localização livre adjacente.
      */
     public Location freeAdjacentLocation(Location location)
     {
@@ -128,10 +153,9 @@ public class Field
                 return next;
             }
         }
-        // Verifica se a localização atual está livre
         if(field[location.getRow()][location.getCol()] == null) {
             return location;
-        } 
+        }
         else {
             return null;
         }
@@ -139,8 +163,6 @@ public class Field
 
     /**
      * Gera um iterator sobre uma lista embaralhada de localizações adjacentes.
-     * @param location Localização de referência
-     * @return Iterator sobre localizações adjacentes
      */
     public Iterator<Location> adjacentLocations(Location location)
     {
@@ -152,7 +174,6 @@ public class Field
             if(nextRow >= 0 && nextRow < depth) {
                 for(int coffset = -1; coffset <= 1; coffset++) {
                     int nextCol = col + coffset;
-                    // Exclui localizações inválidas e a localização original
                     if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
                         locations.add(new Location(nextRow, nextCol));
                     }
@@ -163,19 +184,6 @@ public class Field
         return locations.iterator();
     }
 
-    /**
-     * @return The depth of the field.
-     */
-    public int getDepth()
-    {
-        return depth;
-    }
-    
-    /**
-     * @return The width of the field.
-     */
-    public int getWidth()
-    {
-        return width;
-    }
+    public int getDepth() { return depth; }
+    public int getWidth() { return width; }
 }
