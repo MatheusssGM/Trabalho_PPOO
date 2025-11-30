@@ -20,7 +20,8 @@ public class Simulator
     private static final int DEFAULT_DEPTH = 50;
     private static final double FOX_CREATION_PROBABILITY = 0.02;
     private static final double RABBIT_CREATION_PROBABILITY = 0.08;
-    private static final double WOLF_CREATION_PROBABILITY = 0.005;    
+    private static final double LION_CREATION_PROBABILITY = 0.005;
+    private static final double HUMAN_CREATION_PROBABILITY = 0.010;    
 
     // Lista de animais no campo (usando generics)
     private List<Animal> animals;
@@ -66,7 +67,7 @@ public class Simulator
         view.setColor(Fox.class, Color.blue);
         view.setColor(Rabbit.class, Color.orange);
         view.setColor(Lion.class, Color.red);
-        view.setColor(Lion.class, Color.black);
+        view.setColor(Human.class, Color.black);
         
         // Configura um ponto inicial válido
         reset();
@@ -153,19 +154,26 @@ public class Simulator
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 double probability = rand.nextDouble();
-                if(probability <= WOLF_CREATION_PROBABILITY) {
-                    Lion wolf = new Lion(true);
-                    animals.add(wolf);
-                    wolf.setLocation(row, col);
-                    field.place(wolf, row, col);
+                if(probability <= HUMAN_CREATION_PROBABILITY){
+                    Human human = new Human(true);
+                    animals.add(human);
+                    human.setLocation(row, col);
+                    field.place(human, row, col);
                 }
-                else if(probability <= WOLF_CREATION_PROBABILITY + FOX_CREATION_PROBABILITY) {
+                else if(probability <= LION_CREATION_PROBABILITY + HUMAN_CREATION_PROBABILITY) {
+                    Lion lion = new Lion(true);
+                    animals.add(lion);
+                    lion.setLocation(row, col);
+                    field.place(lion, row, col);
+                }
+                else if(probability <= LION_CREATION_PROBABILITY + FOX_CREATION_PROBABILITY + HUMAN_CREATION_PROBABILITY) {
                     Fox fox = new Fox(true);
                     animals.add(fox);
                     fox.setLocation(row, col);
                     field.place(fox, row, col);
                 }
-                else if(probability <= WOLF_CREATION_PROBABILITY + FOX_CREATION_PROBABILITY + RABBIT_CREATION_PROBABILITY) {
+                else if(probability <= LION_CREATION_PROBABILITY + FOX_CREATION_PROBABILITY + RABBIT_CREATION_PROBABILITY
+                +HUMAN_CREATION_PROBABILITY) {
                     Rabbit rabbit = new Rabbit(true);
                     animals.add(rabbit);
                     rabbit.setLocation(row, col);
