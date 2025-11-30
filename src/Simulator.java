@@ -6,40 +6,37 @@ import java.util.Collections;
 import java.awt.Color;
 
 /**
- * A simple predator-prey simulator, based on a field containing
- * rabbits and foxes.
+ * Simulador simples predador-presa melhorado com conceitos de POO.
+ * Baseado em um campo contendo coelhos e raposas.
+ * Usa herança, polimorfismo, interfaces e generics.
  * 
- * @author David J. Barnes and Michael Kolling
- * @version 2002-04-09
+ * @author Código melhorado com POO
+ * @version 2025
  */
 public class Simulator
 {
-    // The private static final variables represent 
-    // configuration information for the simulation.
-    // The default width for the grid.
+    // Configurações da simulação
     private static final int DEFAULT_WIDTH = 50;
-    // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 50;
-    // The probability that a fox will be created in any given grid position.
     private static final double FOX_CREATION_PROBABILITY = 0.02;
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double RABBIT_CREATION_PROBABILITY = 0.08;    
+    private static final double RABBIT_CREATION_PROBABILITY = 0.08;
+    private static final double WOLF_CREATION_PROBABILITY = 0.005;    
 
-    // The list of animals in the field
-    private List animals;
-    // The list of animals just born
-    private List newAnimals;
-    // The current state of the field.
+    // Lista de animais no campo (usando generics)
+    private List<Animal> animals;
+    // Lista de animais recém-nascidos
+    private List<Animal> newAnimals;
+    // Estado atual do campo
     private Field field;
-    // A second field, used to build the next stage of the simulation.
+    // Campo usado para construir o próximo estágio
     private Field updatedField;
-    // The current step of the simulation.
+    // Passo atual da simulação
     private int step;
-    // A graphical view of the simulation.
+    // Interface gráfica da simulação
     private SimulatorView view;
     
     /**
-     * Construct a simulation field with default size.
+     * Constrói um campo de simulação com tamanho padrão.
      */
     public Simulator()
     {
@@ -47,35 +44,35 @@ public class Simulator
     }
     
     /**
-     * Create a simulation field with the given size.
-     * @param depth Depth of the field. Must be greater than zero.
-     * @param width Width of the field. Must be greater than zero.
+     * Cria um campo de simulação com o tamanho dado.
+     * @param depth Profundidade do campo. Deve ser maior que zero.
+     * @param width Largura do campo. Deve ser maior que zero.
      */
     public Simulator(int depth, int width)
     {
         if(width <= 0 || depth <= 0) {
-            System.out.println("The dimensions must be greater than zero.");
-            System.out.println("Using default values.");
+            System.out.println("As dimensões devem ser maiores que zero.");
+            System.out.println("Usando valores padrão.");
             depth = DEFAULT_DEPTH;
             width = DEFAULT_WIDTH;
         }
-        animals = new ArrayList();
-        newAnimals = new ArrayList();
+        animals = new ArrayList<>();
+        newAnimals = new ArrayList<>();
         field = new Field(depth, width);
         updatedField = new Field(depth, width);
 
-        // Create a view of the state of each location in the field.
+        // Cria uma visualização do estado de cada localização no campo
         view = new SimulatorView(depth, width);
         view.setColor(Fox.class, Color.blue);
         view.setColor(Rabbit.class, Color.orange);
+        view.setColor(Wolf.class, Color.red);
         
-        // Setup a valid starting point.
+        // Configura um ponto inicial válido
         reset();
     }
     
     /**
-     * Run the simulation from its current state for a reasonably long period,
-     * e.g. 500 steps.
+     * Executa a simulação por um período longo (500 passos).
      */
     public void runLongSimulation()
     {
@@ -83,8 +80,9 @@ public class Simulator
     }
     
     /**
-     * Run the simulation from its current state for the given number of steps.
-     * Stop before the given number of steps if it ceases to be viable.
+     * Executa a simulação pelo número dado de passos.
+     * Para antes se a simulação deixar de ser viável.
+     * @param numSteps Número de passos a executar
      */
     public void simulate(int numSteps)
     {
@@ -94,55 +92,42 @@ public class Simulator
     }
     
     /**
-     * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each
-     * fox and rabbit.
+     * Executa um único passo da simulação.
+     * Itera sobre todo o campo atualizando o estado de cada animal.
+     * Demonstra polimorfismo - todos os animais implementam act().
      */
     public void simulateOneStep()
     {
         step++;
         newAnimals.clear();
         
-        // let all animals act
-        for(Iterator iter = animals.iterator(); iter.hasNext(); ) {
-            Object animal = iter.next();
-            if(animal instanceof Rabbit) {
-                Rabbit rabbit = (Rabbit)animal;
-                if(rabbit.isAlive()) {
-                    rabbit.run(updatedField, newAnimals);
-                }
-                else {
-                    iter.remove();   // remove dead rabbits from collection
-                }
-            }
-            else if(animal instanceof Fox) {
-                Fox fox = (Fox)animal;
-                if(fox.isAlive()) {
-                    fox.hunt(field, updatedField, newAnimals);
-                }
-                else {
-                    iter.remove();   // remove dead foxes from collection
-                }
+        // Permite que todos os animais ajam (polimorfismo)
+        for(Iterator<Animal> iter = animals.iterator(); iter.hasNext(); ) {
+            Animal animal = iter.next();
+            if(animal.isAlive()) {
+                // Polimorfismo - chama o método act() apropriado
+                animal.act(field, updatedField, newAnimals);
             }
             else {
-                System.out.println("found unknown animal");
+                iter.remove(); // Remove animais mortos da coleção
             }
         }
-        // add new born animals to the list of animals
+        
+        // Adiciona novos animais nascidos à lista
         animals.addAll(newAnimals);
         
-        // Swap the field and updatedField at the end of the step.
+        // Troca os campos no final do passo
         Field temp = field;
         field = updatedField;
         updatedField = temp;
         updatedField.clear();
 
-        // display the new field on screen
+        // Exibe o novo campo na tela
         view.showStatus(step, field);
     }
         
     /**
-     * Reset the simulation to a starting position.
+     * Reseta a simulação para a posição inicial.
      */
     public void reset()
     {
@@ -152,12 +137,13 @@ public class Simulator
         updatedField.clear();
         populate(field);
         
-        // Show the starting state in the view.
+        // Mostra o estado inicial na visualização
         view.showStatus(step, field);
     }
     
     /**
-     * Populate the field with foxes and rabbits.
+     * Povoa o campo com raposas, coelhos e lobos.
+     * @param field Campo a ser povoado
      */
     private void populate(Field field)
     {
@@ -165,21 +151,46 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {
+                double probability = rand.nextDouble();
+                if(probability <= WOLF_CREATION_PROBABILITY) {
+                    Wolf wolf = new Wolf(true);
+                    animals.add(wolf);
+                    wolf.setLocation(row, col);
+                    field.place(wolf, row, col);
+                }
+                else if(probability <= WOLF_CREATION_PROBABILITY + FOX_CREATION_PROBABILITY) {
                     Fox fox = new Fox(true);
                     animals.add(fox);
                     fox.setLocation(row, col);
                     field.place(fox, row, col);
                 }
-                else if(rand.nextDouble() <= RABBIT_CREATION_PROBABILITY) {
+                else if(probability <= WOLF_CREATION_PROBABILITY + FOX_CREATION_PROBABILITY + RABBIT_CREATION_PROBABILITY) {
                     Rabbit rabbit = new Rabbit(true);
                     animals.add(rabbit);
                     rabbit.setLocation(row, col);
                     field.place(rabbit, row, col);
                 }
-                // else leave the location empty.
+                // caso contrário, deixa a localização vazia
             }
         }
         Collections.shuffle(animals);
+    }
+    
+    /**
+     * Obtém o número atual de passos da simulação.
+     * @return Passo atual
+     */
+    public int getStep()
+    {
+        return step;
+    }
+    
+    /**
+     * Obtém a lista atual de animais.
+     * @return Lista de animais
+     */
+    public List<Animal> getAnimals()
+    {
+        return new ArrayList<>(animals); // Retorna cópia para segurança
     }
 }

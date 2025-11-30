@@ -2,43 +2,44 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
- * Modelo de uma raposa no simulador.
- * Raposas envelhecem, se movem, caçam coelhos e morrem.
- * Implementa herança da classe Animal e interface Predator.
+ * Modelo de um lobo no simulador.
+ * Lobos são predadores superiores que caçam tanto raposas quanto coelhos.
+ * Demonstra extensibilidade do sistema com herança e interface Predator.
  * 
  * @author Código melhorado com POO
  * @version 2025
  */
-public class Fox extends Animal implements Predator
+public class Wolf extends Animal implements Predator
 {
-    // Características compartilhadas por todas as raposas
-    private static final int BREEDING_AGE = 10;
-    private static final int MAX_AGE = 150;
-    private static final double BREEDING_PROBABILITY = 0.09;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int RABBIT_FOOD_VALUE = 4;
+    // Características compartilhadas por todos os lobos
+    private static final int BREEDING_AGE = 15;
+    private static final int MAX_AGE = 200;
+    private static final double BREEDING_PROBABILITY = 0.05;
+    private static final int MAX_LITTER_SIZE = 2;
+    private static final int FOX_FOOD_VALUE = 7;
+    private static final int RABBIT_FOOD_VALUE = 3;
     
-    // Nível de comida da raposa
+    // Nível de comida do lobo
     private int foodLevel;
-
+    
     /**
-     * Cria uma raposa. Pode ser criada recém-nascida ou com idade aleatória.
+     * Cria um lobo. Pode ser criado recém-nascido ou com idade aleatória.
      * @param randomAge Se verdadeiro, terá idade e nível de fome aleatórios
      */
-    public Fox(boolean randomAge)
+    public Wolf(boolean randomAge)
     {
         super(randomAge);
         if(randomAge) {
-            foodLevel = rand.nextInt(RABBIT_FOOD_VALUE);
+            foodLevel = rand.nextInt(FOX_FOOD_VALUE);
         }
         else {
-            foodLevel = RABBIT_FOOD_VALUE;
+            foodLevel = FOX_FOOD_VALUE;
         }
     }
     
     /**
-     * Implementa o comportamento da raposa na simulação.
-     * Caça coelhos, se reproduz, envelhece e pode morrer.
+     * Implementa o comportamento do lobo na simulação.
+     * Caça raposas e coelhos, se reproduz, envelhece e pode morrer.
      */
     @Override
     public void act(Field currentField, Field updatedField, List<Animal> newAnimals)
@@ -46,20 +47,20 @@ public class Fox extends Animal implements Predator
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            // Reprodução - novos filhotes nascem em localizações adjacentes
+            // Reprodução
             int births = breed();
             for(int b = 0; b < births; b++) {
-                Fox newFox = new Fox(false);
-                newAnimals.add(newFox);
+                Wolf newWolf = new Wolf(false);
+                newAnimals.add(newWolf);
                 Location loc = updatedField.randomAdjacentLocation(location);
                 if(loc != null) {
-                    newFox.setLocation(loc);
-                    updatedField.place(newFox, loc);
+                    newWolf.setLocation(loc);
+                    updatedField.place(newWolf, loc);
                 }
             }
             // Movimento - usa interface Predator para caçar
             Location newLocation = hunt(currentField, location);
-            if(newLocation == null) {  // sem comida - move aleatoriamente
+            if(newLocation == null) {
                 newLocation = updatedField.freeAdjacentLocation(location);
             }
             if(newLocation != null) {
@@ -67,14 +68,13 @@ public class Fox extends Animal implements Predator
                 updatedField.place(this, newLocation);
             }
             else {
-                // não pode se mover - superpopulação
                 setDead();
             }
         }
     }
     
     /**
-     * Aumenta a fome da raposa. Pode resultar em morte.
+     * Aumenta a fome do lobo. Pode resultar em morte.
      */
     private void incrementHunger()
     {
@@ -86,6 +86,7 @@ public class Fox extends Animal implements Predator
     
     /**
      * Implementa comportamento de caça da interface Predator.
+     * Lobos preferem raposas mas também comem coelhos.
      * @param field Campo onde caçar
      * @param location Localização atual
      * @return Local onde a presa foi encontrada, ou null
@@ -94,13 +95,30 @@ public class Fox extends Animal implements Predator
     public Location hunt(Field field, Location location)
     {
         Iterator<Location> adjacentLocations = field.adjacentLocations(location);
+        
+        // Primeiro procura por raposas (presa preferida)
+        Iterator<Location> adjacentLocationsCopy = field.adjacentLocations(location);
+        while(adjacentLocationsCopy.hasNext()) {
+            Location where = adjacentLocationsCopy.next();
+            Animal animal = field.getObjectAt(where);
+            if(animal instanceof Fox) {
+                Fox fox = (Fox) animal;
+                if(fox.isAlive()) {
+                    fox.setDead();
+                    foodLevel = FOX_FOOD_VALUE;
+                    return where;
+                }
+            }
+        }
+        
+        // Se não encontrar raposas, procura por coelhos
         while(adjacentLocations.hasNext()) {
             Location where = adjacentLocations.next();
             Animal animal = field.getObjectAt(where);
             if(animal instanceof Rabbit) {
                 Rabbit rabbit = (Rabbit) animal;
-                if(rabbit.isAlive()) { 
-                    rabbit.setDead(); // Come o coelho
+                if(rabbit.isAlive()) {
+                    rabbit.setDead();
                     foodLevel = RABBIT_FOOD_VALUE;
                     return where;
                 }
@@ -108,21 +126,16 @@ public class Fox extends Animal implements Predator
         }
         return null;
     }
-        
-    /**
-     * Cria uma nova raposa (método da classe Animal).
-     * @param randomAge Se deve ter idade aleatória
-     * @return Nova raposa
-     */
-    @Override
-    protected Animal createOffspring(boolean randomAge)
-    {
-        return new Fox(randomAge);
-    }
     
     /**
      * Métodos implementados da classe abstrata Animal
      */
+    @Override
+    protected Animal createOffspring(boolean randomAge)
+    {
+        return new Wolf(randomAge);
+    }
+    
     @Override
     protected int getMaxAge()
     {
@@ -164,6 +177,6 @@ public class Fox extends Animal implements Predator
     @Override
     public boolean isHungry()
     {
-        return foodLevel < (RABBIT_FOOD_VALUE / 2);
+        return foodLevel < (FOX_FOOD_VALUE / 2);
     }
 }
