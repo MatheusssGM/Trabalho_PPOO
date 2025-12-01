@@ -13,7 +13,7 @@ public interface Predator
      * @param location Localização do predador
      * @return Localização onde a presa foi encontrada, ou null
      */
-    Location hunt(Field field, Location location);
+    Location hunt(Campo field, Location location);
     
     /**
      * Obtém o nível de comida atual do predador.

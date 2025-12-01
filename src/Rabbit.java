@@ -25,7 +25,7 @@ public class Rabbit extends Animal implements Prey
     }
 
     @Override
-    public void act(Field currentField, Field updatedField, List<Animal> newAnimals)
+    public void act(Campo currentField, Campo updatedField, List<Animal> newAnimals)
     {
         incrementAge();
         if(!isAlive()) return;
@@ -50,7 +50,7 @@ public class Rabbit extends Animal implements Prey
             return; // não sai da toca
         }
 
-        // 🐍 Se detecta predadores, tenta fugir
+        // Se detecta predadores, tenta fugir
         if(detectsPredators(currentField, location)) {
             Location escapeLoc = escape(currentField, location);
             if(escapeLoc != null) {
@@ -88,9 +88,9 @@ public class Rabbit extends Animal implements Prey
         }
     }
 
-    // 🔥 Predadores reais: Fox e Lion
+    //  Predadores reais: Fox e Lion
     @Override
-    public boolean detectsPredators(Field field, Location location)
+    public boolean detectsPredators(Campo field, Location location)
     {
         Iterator<Location> it = field.adjacentLocations(location);
         while(it.hasNext()) {
@@ -106,9 +106,9 @@ public class Rabbit extends Animal implements Prey
         return false;
     }
 
-    // 🏃 Fuga inteligente — evita predadores e ambientes ilegais
+    // Fuga inteligente - evita predadores e ambientes ilegais
     @Override
-    public Location escape(Field field, Location location)
+    public Location escape(Campo field, Location location)
     {
         Iterator<Location> it = field.adjacentLocations(location);
 

@@ -36,7 +36,7 @@ public class Fox extends Animal implements Predator
     }
 
     @Override
-    public void act(Field currentField, Field updatedField, List<Animal> newAnimals)
+    public void act(Campo currentField, Campo updatedField, List<Animal> newAnimals)
     {
         incrementAge();
         incrementHunger();
@@ -80,7 +80,7 @@ public class Fox extends Animal implements Predator
     }
 
     @Override
-    public Location hunt(Field field, Location location)
+    public Location hunt(Campo field, Location location)
     {
         Iterator<Location> it = field.adjacentLocations(location);
         while(it.hasNext()) {

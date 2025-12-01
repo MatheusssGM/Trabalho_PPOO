@@ -13,7 +13,7 @@ public interface Prey
      * @param location Localização atual
      * @return Nova localização de escape, ou null se não conseguir escapar
      */
-    Location escape(Field field, Location location);
+    Location escape(Campo field, Location location);
     
     /**
      * Verifica se há predadores nas proximidades.
@@ -21,5 +21,5 @@ public interface Prey
      * @param location Localização atual
      * @return true se há predadores por perto
      */
-    boolean detectsPredators(Field field, Location location);
+    boolean detectsPredators(Campo field, Location location);
 }

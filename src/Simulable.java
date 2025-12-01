@@ -15,7 +15,7 @@ public interface Simulable
      * @param updatedField Campo que será atualizado
      * @param newAnimals Lista para adicionar novos animais nascidos
      */
-    void act(Field currentField, Field updatedField, List<Animal> newAnimals);
+    void act(Campo currentField, Campo updatedField, List<Animal> newAnimals);
     
     /**
      * Verifica se o elemento ainda está ativo na simulação.

@@ -1,0 +1,20 @@
+# Configuracoes da Simulacao Predador-Presa
+# Modifique os valores abaixo e reinicie o programa
+
+# Dimensoes do campo
+field.width=50
+field.height=50
+
+# Probabilidades iniciais dos animais (0.0 a 1.0)
+animal.rabbit.probability=0.05
+animal.fox.probability=0.05
+animal.lion.probability=0.05
+animal.human.probability=0.05
+
+# Numero de passos da simulacao
+simulation.steps=500
+
+# Dicas:
+# - Coelhos devem ter maior probabilidade (presas)
+# - Humanos devem ter menor probabilidade (predador supremo)
+# - Mantenha o equilibrio para evitar extincoes rapidas
