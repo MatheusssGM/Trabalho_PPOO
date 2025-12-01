@@ -39,7 +39,7 @@ public class Human extends Animal implements Predator
      * Comportamento do humano.
      */
     @Override
-    public void act(Field currentField, Field updatedField, List<Animal> newAnimals)
+    public void act(Campo currentField, Campo updatedField, List<Animal> newAnimals)
     {
         incrementAge();
         incrementHunger();
@@ -95,7 +95,7 @@ public class Human extends Animal implements Predator
      * Humanos caçam apenas leões.
      */
     @Override
-    public Location hunt(Field field, Location location)
+    public Location hunt(Campo field, Location location)
     {
         Iterator<Location> it = field.adjacentLocations(location);
         while(it.hasNext()) {

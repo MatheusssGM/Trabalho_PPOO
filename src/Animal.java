@@ -39,7 +39,7 @@ public abstract class Animal implements Simulable
      * @param newAnimals Lista de novos animais nascidos
      */
     @Override
-    public abstract void act(Field currentField, Field updatedField, List<Animal> newAnimals);
+    public abstract void act(Campo currentField, Campo updatedField, List<Animal> newAnimals);
     
     /**
      * Incrementa a idade do animal. Pode resultar em morte.
