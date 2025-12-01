@@ -17,7 +17,6 @@ public class ControleSimulacaoInterativa extends JFrame {
     private JButton runCompleteButton;
     private JLabel statusLabel;
     private JLabel stepLabel;
-    private JLabel animalsLabel;
     
     private Timer fastTimer; // Timer para execução completa
     private boolean isPaused = false;
@@ -37,19 +36,16 @@ public class ControleSimulacaoInterativa extends JFrame {
         setLayout(new BorderLayout());
         
         // Painel de informações
-        JPanel infoPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         infoPanel.setBorder(BorderFactory.createTitledBorder("Status Atual"));
         
         stepLabel = new JLabel("Passo: 0 de " + maxSteps);
-        animalsLabel = new JLabel("Animais Vivos: " + simulator.getAnimals().size());
         statusLabel = new JLabel("Estado: Pronto");
         
         stepLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        animalsLabel.setFont(new Font("Arial", Font.BOLD, 14));
         statusLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
         infoPanel.add(stepLabel);
-        infoPanel.add(animalsLabel);
         infoPanel.add(statusLabel);
         
         // Painel de controles
@@ -113,11 +109,10 @@ public class ControleSimulacaoInterativa extends JFrame {
         stopButton.setVisible(true); // Garantir que botão esteja visível
         stopButton.removeActionListener(stopButton.getActionListeners()[0]);
         stopButton.addActionListener(e -> System.exit(0));
-        statusLabel.setText("Estado: Simulação finalizada");
+        statusLabel.setText("Estado: Simulacao finalizada");
         
         System.out.println("\n=== SIMULACAO FINALIZADA ===");
         System.out.println("Passos executados: " + currentStep);
-        System.out.println("Animais restantes: " + simulator.getAnimals().size());
     }
     
     private void togglePause() {
@@ -126,12 +121,12 @@ public class ControleSimulacaoInterativa extends JFrame {
             
             if (isPaused) {
                 pauseButton.setText("Continuar");
-                statusLabel.setText("Estado: Execução pausada");
-                stopButton.setVisible(false); // Esconder botão parar
+                statusLabel.setText("Estado: Execucao pausada");
+                stopButton.setVisible(false); // Esconder botao parar
             } else {
                 pauseButton.setText("Pausar");
-                statusLabel.setText("Estado: Executando simulação completa...");
-                stopButton.setVisible(true); // Mostrar botão parar
+                statusLabel.setText("Estado: Executando simulacao completa...");
+                stopButton.setVisible(true); // Mostrar botao parar
             }
         }
     }
@@ -144,9 +139,9 @@ public class ControleSimulacaoInterativa extends JFrame {
         stopButton.setEnabled(true);
         stopButton.setVisible(true);
         isPaused = false;
-        statusLabel.setText("Estado: Executando simulação completa...");
+        statusLabel.setText("Estado: Executando simulacao completa...");
         
-        // Timer para execução rápida mas visível
+        // Timer para execucao rapida mas visivel
         fastTimer = new Timer(50, null); // 50ms entre passos (20 passos por segundo)
         
         fastTimer.addActionListener(e -> {
@@ -161,9 +156,8 @@ public class ControleSimulacaoInterativa extends JFrame {
                     stopSimulation();
                     
                     JOptionPane.showMessageDialog(this, 
-                        "Simulação completa executada!\nPassos executados: " + currentStep + 
-                        "\nAnimais restantes: " + simulator.getAnimals().size(),
-                        "Execução Completa Finalizada", 
+                        "Simulacao completa executada!\nPassos executados: " + currentStep,
+                        "Execucao Completa Finalizada", 
                         JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -175,10 +169,9 @@ public class ControleSimulacaoInterativa extends JFrame {
     
     private void updateStatus() {
         stepLabel.setText("Passo: " + currentStep + " de " + maxSteps);
-        animalsLabel.setText("Animais Vivos: " + simulator.getAnimals().size());
         
         if (currentStep >= maxSteps) {
-            statusLabel.setText("Estado: Simulação finalizada");
+            statusLabel.setText("Estado: Simulacao finalizada");
         } else {
             statusLabel.setText("Estado: Pronto");
         }
