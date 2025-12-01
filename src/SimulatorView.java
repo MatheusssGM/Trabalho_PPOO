@@ -9,8 +9,7 @@ import java.util.HashMap;
  * representing its contents. It uses a default background color.
  * Colors for each type of species can be defined using the
  * setColor method.
- * 
- * @author David J. Barnes and Michael Kolling
+ * * @author David J. Barnes and Michael Kolling
  * @version 2002-04-23
  */
 public class SimulatorView extends JFrame
@@ -25,7 +24,7 @@ public class SimulatorView extends JFrame
     private final String POPULATION_PREFIX = "Population: ";
     private JLabel stepLabel, population;
     private FieldView fieldView;
-    
+
     // A map for storing colors for participants in the simulation
     private HashMap colors;
     // A statistics object computing and storing simulation information
@@ -42,9 +41,9 @@ public class SimulatorView extends JFrame
         setTitle("Fox and Rabbit Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        
+
         setLocation(100, 50);
-        
+
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
@@ -54,7 +53,7 @@ public class SimulatorView extends JFrame
         pack();
         setVisible(true);
     }
-    
+
     /**
      * Define a color to be used for a given class of animal.
      */
@@ -79,9 +78,35 @@ public class SimulatorView extends JFrame
     }
 
     /**
+     * Helper method to determine the color of the environment.
+     * @param env The environment object
+     * @return The color representing the terrain
+     */
+    private Color getEnvironmentColor(Environment env) {
+        if (env == null) return EMPTY_COLOR;
+
+        // Define as cores para cada tipo de ambiente
+        // Use nomes de classes (String) para evitar erros caso as classes não estejam importadas
+        String envName = env.getClass().getSimpleName();
+
+        switch (envName) {
+            case "Mountain":
+                return Color.DARK_GRAY; // Montanhas são cinza escuro
+            case "Savanna":
+                return new Color(240, 230, 140); // Khaki/Amarelo pálido para Savana
+            case "Burrow":
+                return new Color(139, 69, 19); // Marrom para Toca
+            case "Planicie":
+                return new Color(144, 238, 144); // Verde claro para Planície
+            default:
+                return EMPTY_COLOR;
+        }
+    }
+
+    /**
      * Show the current status of the field.
      * @param step Which iteration step it is.
-     * @param stats Status of the field to be represented.
+     * @param field Status of the field to be represented.
      */
     public void showStatus(int step, Field field)
     {
@@ -92,16 +117,20 @@ public class SimulatorView extends JFrame
 
         stats.reset();
         fieldView.preparePaint();
-            
+
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 Object animal = field.getObjectAt(row, col);
+
                 if(animal != null) {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                 }
                 else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
+                    // SE NÃO TIVER ANIMAL, PINTA O AMBIENTE
+                    Environment env = field.getEnvironment(row, col);
+                    Color envColor = getEnvironmentColor(env);
+                    fieldView.drawMark(col, row, envColor);
                 }
             }
         }
@@ -119,13 +148,13 @@ public class SimulatorView extends JFrame
     {
         return stats.isViable(field);
     }
-    
+
     /**
-     * Provide a graphical view of a rectangular field. This is 
+     * Provide a graphical view of a rectangular field. This is
      * a nested class (a class defined inside a class) which
      * defines a custom component for the user interface. This
      * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
+     * This is rather advanced GUI stuff - you can ignore this
      * for your project if you like.
      */
     private class FieldView extends JPanel
@@ -154,9 +183,9 @@ public class SimulatorView extends JFrame
         public Dimension getPreferredSize()
         {
             return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
-                                 gridHeight * GRID_VIEW_SCALING_FACTOR);
+                    gridHeight * GRID_VIEW_SCALING_FACTOR);
         }
-        
+
         /**
          * Prepare for a new round of painting. Since the component
          * may be resized, compute the scaling factor again.
@@ -178,7 +207,7 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        
+
         /**
          * Paint on grid location on this field in a given color.
          */

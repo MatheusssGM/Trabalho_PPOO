@@ -1,181 +1,212 @@
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /**
- * Representa um grid retangular de posições do campo.
- * Cada posição pode armazenar um único animal.
- * Melhorado com uso de generics.
- * 
- * @author Código melhorado com POO
+ * Representa o campo da simulação.
+ * Armazena referências a animais (ou null) e aos ambientes de cada célula.
+ *
+ * Implementa:
+ * - iterator de locais adjacentes (método existente no projeto original)
+ * - lista de locais adjacentes (útil para for-each)
+ * - métodos auxiliares: freeAdjacentLocation, randomAdjacentLocation, place, getObjectAt, clear, etc.
+ *
+ * @author
  * @version 2025
  */
 public class Field
 {
-    private static final Random rand = new Random();
-    
-    // Dimensões do campo
     private int depth, width;
-    // Armazenamento para os animais
-    private Animal[][] field;
+    private Object[][] field; // armazena Animal ou null
+    private Environment[][] environments;
+    private Random rand = new Random();
 
     /**
-     * Representa um campo com as dimensões dadas.
-     * @param depth Profundidade do campo
-     * @param width Largura do campo
+     * Cria um campo com profundidade e largura.
+     *
+     * @param depth número de linhas
+     * @param width número de colunas
      */
     public Field(int depth, int width)
     {
         this.depth = depth;
         this.width = width;
-        field = new Animal[depth][width];
+        field = new Object[depth][width];
+        environments = new Environment[depth][width];
     }
-    
+
     /**
-     * Limpa o campo.
+     * Limpa apenas os animais do campo, preservando os ambientes.
      */
     public void clear()
     {
-        for(int row = 0; row < depth; row++) {
-            for(int col = 0; col < width; col++) {
-                field[row][col] = null;
+        for(int r = 0; r < depth; r++) {
+            for(int c = 0; c < width; c++) {
+                field[r][c] = null;
             }
         }
     }
-    
+
     /**
-     * Coloca um animal na localização dada.
-     * @param animal Animal a ser colocado
-     * @param row Coordenada da linha
-     * @param col Coordenada da coluna
+     * Coloca um animal na coordenada (row, col).
+     * Não realiza checagem de ambiente aqui — quem chama deve validar canEnter.
+     *
+     * @param animal animal a ser colocado
+     * @param row linha
+     * @param col coluna
      */
     public void place(Animal animal, int row, int col)
     {
-        place(animal, new Location(row, col));
+        field[row][col] = animal;
     }
-    
+
     /**
-     * Coloca um animal na localização dada.
-     * @param animal Animal a ser colocado
-     * @param location Onde colocar o animal
+     * Coloca um animal numa Location.
+     * @param animal animal a ser colocado
+     * @param loc localização alvo
      */
-    public void place(Animal animal, Location location)
+    public void place(Animal animal, Location loc)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        place(animal, loc.getRow(), loc.getCol());
     }
-    
+
     /**
-     * Retorna o animal na localização dada, se houver.
-     * @param location Localização no campo
-     * @return Animal na localização ou null se não houver
+     * Recupera o objeto (animal) na Location.
+     * @param loc localização
+     * @return Animal ou null
      */
-    public Animal getObjectAt(Location location)
+    public Animal getObjectAt(Location loc)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return (Animal) field[loc.getRow()][loc.getCol()];
     }
-    
+
     /**
-     * Retorna o animal na localização dada, se houver.
-     * @param row Linha desejada
-     * @param col Coluna desejada
-     * @return Animal na localização ou null se não houver
+     * Recupera o objeto na coordenada.
      */
     public Animal getObjectAt(int row, int col)
     {
-        return field[row][col];
-    }
-    
-    /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area. This
-     *         may be the same object as the location parameter.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        int row = location.getRow();
-        int col = location.getCol();
-        // Generate an offset of -1, 0, or +1 for both the current row and col.
-        int nextRow = row + rand.nextInt(3) - 1;
-        int nextCol = col + rand.nextInt(3) - 1;
-        // Check in case the new location is outside the bounds.
-        if(nextRow < 0 || nextRow >= depth || nextCol < 0 || nextCol >= width) {
-            return location;
-        }
-        else if(nextRow != row || nextCol != col) {
-            return new Location(nextRow, nextCol);
-        }
-        else {
-            return location;
-        }
-    }
-    
-    /**
-     * Tenta encontrar uma localização livre adjacente à localização dada.
-     * @param location Localização de referência
-     * @return Localização válida livre ou null se todas estão ocupadas
-     */
-    public Location freeAdjacentLocation(Location location)
-    {
-        Iterator<Location> adjacent = adjacentLocations(location);
-        while(adjacent.hasNext()) {
-            Location next = adjacent.next();
-            if(field[next.getRow()][next.getCol()] == null) {
-                return next;
-            }
-        }
-        // Verifica se a localização atual está livre
-        if(field[location.getRow()][location.getCol()] == null) {
-            return location;
-        } 
-        else {
-            return null;
-        }
+        return (Animal) field[row][col];
     }
 
     /**
-     * Gera um iterator sobre uma lista embaralhada de localizações adjacentes.
-     * @param location Localização de referência
-     * @return Iterator sobre localizações adjacentes
-     */
-    public Iterator<Location> adjacentLocations(Location location)
-    {
-        int row = location.getRow();
-        int col = location.getCol();
-        LinkedList<Location> locations = new LinkedList<>();
-        for(int roffset = -1; roffset <= 1; roffset++) {
-            int nextRow = row + roffset;
-            if(nextRow >= 0 && nextRow < depth) {
-                for(int coffset = -1; coffset <= 1; coffset++) {
-                    int nextCol = col + coffset;
-                    // Exclui localizações inválidas e a localização original
-                    if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-                        locations.add(new Location(nextRow, nextCol));
-                    }
-                }
-            }
-        }
-        Collections.shuffle(locations, rand);
-        return locations.iterator();
-    }
-
-    /**
-     * @return The depth of the field.
+     * Retorna a profundidade (número de linhas).
      */
     public int getDepth()
     {
         return depth;
     }
-    
+
     /**
-     * @return The width of the field.
+     * Retorna a largura (número de colunas).
      */
     public int getWidth()
     {
         return width;
+    }
+
+    /**
+     * Define o ambiente em uma célula.
+     * @param row linha
+     * @param col coluna
+     * @param env environment
+     */
+    public void setEnvironmentAt(int row, int col, Environment env)
+    {
+        environments[row][col] = env;
+    }
+
+    /**
+     * Retorna o ambiente na célula.
+     * @param row linha
+     * @param col coluna
+     * @return Environment
+     */
+    public Environment getEnvironment(int row, int col)
+    {
+        return environments[row][col];
+    }
+
+    /**
+     * Retorna o ambiente dado uma Location.
+     * @param loc localização
+     * @return Environment
+     */
+    public Environment getEnvironment(Location loc)
+    {
+        return getEnvironment(loc.getRow(), loc.getCol());
+    }
+
+    /**
+     * Retorna um Iterator<Location> representando as localizações adjacentes
+     * (8 vizinhos) dentro do campo. Este método preserva compatibilidade com projetos que
+     * esperam um Iterator.
+     *
+     * @param location localização central
+     * @return Iterator<Location>
+     */
+    public Iterator<Location> adjacentLocations(final Location location)
+    {
+        final List<Location> locs = adjacentLocationsList(location);
+        return locs.iterator();
+    }
+
+    /**
+     * Retorna uma lista com as localizações adjacentes válidas.
+     * Útil para for-each e para evitar reter/consumir iterators.
+     *
+     * @param location localização central
+     * @return List<Location> com locais adjacentes
+     */
+    public List<Location> adjacentLocationsList(Location location)
+    {
+        List<Location> locations = new ArrayList<>();
+        int row = location.getRow();
+        int col = location.getCol();
+
+        for(int roff = -1; roff <= 1; roff++) {
+            int nextRow = row + roff;
+            if(nextRow < 0 || nextRow >= depth) continue;
+            for(int coff = -1; coff <= 1; coff++) {
+                int nextCol = col + coff;
+                if(nextCol < 0 || nextCol >= width) continue;
+                // pula a própria célula
+                if(roff == 0 && coff == 0) continue;
+                locations.add(new Location(nextRow, nextCol));
+            }
+        }
+        return locations;
+    }
+
+    /**
+     * Retorna uma localização adjacente livre (primeira encontrada), ou null.
+     * Observação: a validação do ambiente (Environment.canEnter) fica a cargo de quem chama.
+     *
+     * @param location localização central
+     * @return Location livre ou null
+     */
+    public Location freeAdjacentLocation(Location location)
+    {
+        List<Location> adj = adjacentLocationsList(location);
+        for(Location loc : adj) {
+            if(getObjectAt(loc) == null) {
+                return loc;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retorna uma localização adjacente aleatória (pode estar ocupada), ou null.
+     * Útil para espalhar filhotes em locais adjacentes aleatórios.
+     *
+     * @param location localização central
+     * @return Location ou null
+     */
+    public Location randomAdjacentLocation(Location location)
+    {
+        List<Location> adj = adjacentLocationsList(location);
+        if(adj.isEmpty()) return null;
+        return adj.get(rand.nextInt(adj.size()));
     }
 }
