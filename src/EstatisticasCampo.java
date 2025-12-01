@@ -11,7 +11,7 @@ import java.util.Map;
  * @author Código melhorado com POO
  * @version 2025
  */
-public class FieldStats
+public class EstatisticasCampo
 {
     // Contadores para cada tipo de entidade (raposa, coelho, etc.)
     private Map<Class<?>, Counter> counters;
@@ -21,7 +21,7 @@ public class FieldStats
     /**
      * Constrói um objeto de estatísticas de campo.
      */
-    public FieldStats()
+    public EstatisticasCampo()
     {
         // Configura uma coleção para contadores de cada tipo de animal
         counters = new HashMap<>();
@@ -31,7 +31,7 @@ public class FieldStats
     /**
      * @return String descrevendo quais animais estão no campo
      */
-    public String getPopulationDetails(Field field)
+    public String getPopulationDetails(Campo field)
     {
         StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
@@ -84,7 +84,7 @@ public class FieldStats
      * Determina se a simulação ainda é viável.
      * @return true se há mais de uma espécie viva
      */
-    public boolean isViable(Field field)
+    public boolean isViable(Campo field)
     {
         int nonZero = 0;
         if(!countsValid) {
@@ -103,7 +103,7 @@ public class FieldStats
      * Só atualiza quando uma solicitação é feita.
      * @param field Campo a ser analisado
      */
-    private void generateCounts(Field field)
+    private void generateCounts(Campo field)
     {
         reset();
         for(int row = 0; row < field.getDepth(); row++) {

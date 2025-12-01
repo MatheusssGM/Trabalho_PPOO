@@ -15,7 +15,7 @@ import java.util.Random;
  * @author
  * @version 2025
  */
-public class Field
+public class Campo
 {
     private int depth, width;
     private Object[][] field; // armazena Animal ou null
@@ -28,7 +28,7 @@ public class Field
      * @param depth número de linhas
      * @param width número de colunas
      */
-    public Field(int depth, int width)
+    public Campo(int depth, int width)
     {
         this.depth = depth;
         this.width = width;
